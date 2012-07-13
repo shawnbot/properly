@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Properly.js</title>
+        <script type="text/javascript" src="properly.js"></script>
+        <script type="text/javascript" src="http://code.jquery.com/qunit/qunit-1.9.0.js"></script>
+        <link rel="stylesheet" type="text/css" href="http://code.jquery.com/qunit/qunit-1.9.0.css"></script>
+    </head>
+    <body>
+        <div id="qunit"></div>
+        <script type="text/javascript">
+            var P = Properly;
+
+            test("Gets name properties", function() {
+                var user = {
+                    "name": {
+                        "first": "Shawn",
+                        "last": "Allen"
+                    },
+                    "sex": "m"
+                };
+
+                strictEqual(P.get(user, "sex"), "m", "Sex is good");
+                deepEqual(P.get(user, "name"), user.name, "Name object is equal");
+
+                equal(P.get(user, "name.first"), "Shawn", "First name works");
+                equal(P.get(user, "name.last"), "Allen", "Last name works");
+                equal(P.get(user, "name.last.length"), 5, "Last name length matches");
+
+                var getName = P.template("{name.last}, {name.first}");
+                equal(getName(user), "Allen, Shawn", "Name template works");
+
+                var getNames = P.multigetter("name.first", "name.last");
+                deepEqual(getNames(user), ["Shawn", "Allen"], "Multi-getter works");
+                var getNames2 = P.multigetter(["name.first", "name.last"]);
+                deepEqual(getNames2(user), ["Shawn", "Allen"], "Multi-getter works with array argument");
+
+                Properly.set(user, "age", 31);
+                equal(user.age, 31, "Set user age to 31");
+
+                Properly.set(user, "name.middle", "Paul");
+                equal(user.name.middle, "Paul", "Set user middle name");
+
+                Properly.multiset(user, {"name.middle": null, "age": null});
+                equal(user.name.middle, null, "Unset middle name via multiset");
+                equal(user.age, null, "Unset age via multiset");
+            });
+
+        </script>
+    </body>
+</html>
