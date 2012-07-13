@@ -1,4 +1,4 @@
-properly
+Properly
 ========
 
-A JavaScript library for working programmatically with object properties
+A JavaScript library for working programmatically with object properties.
