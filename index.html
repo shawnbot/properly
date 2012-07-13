@@ -17,20 +17,23 @@
         working with object properties.</p>
 
         <pre class="prettyprint">
-var firstName = Properly("name.first");
 var person = {
     name: {
         first: "Shawn",
         last: "Allen"
     }
 };
-console.log("first name:", firstName(person)); // "Shawn"
+var firstName = Properly("name.first");
+console.log(firstName.get(person)); // "Shawn"
 
-firstName.set(person, "Sean"); // sets user.name.first to "Sean"
-console.log("first name:", firstName(person)); // "Sean"
+firstName.set(person, "Sean"); // sets person.name.first to "Sean"
+console.log(firstName.get(person)); // "Sean"
+
+console.log(Properly.get(person, "name.first.length")); // 5
 
 var formatName = Properly.template("{name.first} {name.last}");
-console.log("full name:", formatName(person)); // "Shawn Allen"
+console.log(formatName(person)); // "Shawn Allen"
+
 </pre>
 
         <div id="qunit"></div>
