@@ -18,6 +18,37 @@ exports.Properly = (function() {
     };
 
     /**
+     * Creates an object with get() and set() functions that get and set
+     * properties on the provided object.
+     */
+    Properly.wrap = function(obj) {
+        return {
+            get: function(prop) {
+                return Properly.get(obj, prop);
+            },
+            set: function(prop, value) {
+                return Properly.set(obj, prop, value);
+            }
+        };
+    };
+
+    /**
+     * Creates an object with get() and set() functions that get and set the
+     * named property on the provided object.
+     */
+    Properly.wrap.prop = function(obj, prop) {
+        var p = Properly(prop);
+        return {
+            get: function() {
+                return p.get(obj);
+            },
+            set: function(value) {
+                return p.set(obj, value);
+            }
+        };
+    };
+
+    /**
      * Create a function that gets the named property from the function's first
      * argument.
      *
@@ -137,6 +168,46 @@ exports.Properly = (function() {
     // shorthand for Properly.multisetter(keyValues)(obj);
     Properly.multiset = function(obj, keyValues) {
         return Properly.multisetter(keyValues).call(null, obj);
+    };
+
+    Properly.remover = function(prop) {
+        var fields = Properly.parseFieldNames(prop),
+            len = fields.length;
+        if (len > 1) {
+            return function(d, value) {
+                for (var i = 0; i < len; i++) {
+                    var field = fields[i];
+                    if (i === len - 1) {
+                        delete d[field];
+                    } else {
+                        d = d[field];
+                        // break if we can't get that far down
+                        if (typeof d === "undefined") break;
+                    }
+                }
+            };
+        } else {
+            return function(d) {
+                delete d[prop];
+            };
+        }
+    };
+
+    Properly.remove = function(obj, prop) {
+        return Properly.remover(prop).call(null, obj);
+    };
+
+    Properly.multiremover = function(props) {
+        var len = props.length;
+        return function(d) {
+            for (var i = 0; i < len; i++) {
+                Properly.remove(obj, props[i]);
+            }
+        };
+    };
+
+    Properly.multiremove = function(obj, props) {
+        return Properly.multiremover(props).call(null, obj);
     };
 
     /**

@@ -7,18 +7,41 @@
         <link rel="stylesheet" type="text/css" href="http://code.jquery.com/qunit/qunit-1.9.0.css"></script>
     </head>
     <body>
+        <h1>Properly.js</h1>
+
+        <p><em>Properly</em> is a JavaScript library for programmatically
+        working with object properties.</p>
+
+        <pre>
+var firstName = Properly("name.first");
+var person = {
+    name: {
+        first: "Shawn",
+        last: "Allen"
+    }
+};
+console.log("first name:", firstName(person)); // "Shawn"
+
+firstName.set(person, "Sean"); // sets user.name.first to "Sean"
+console.log("first name:", firstName(person)); // "Sean"
+
+var formatName = Properly.template("{name.first} {name.last}");
+console.log("full name:", formatName(person)); // "Shawn Allen"
+</pre>
+
         <div id="qunit"></div>
         <script type="text/javascript">
             var P = Properly;
 
-            test("Gets name properties", function() {
-                var user = {
-                    "name": {
-                        "first": "Shawn",
-                        "last": "Allen"
-                    },
-                    "sex": "m"
-                };
+            var user = {
+                "name": {
+                    "first": "Shawn",
+                    "last": "Allen"
+                },
+                "sex": "m"
+            };
+
+            test("Gets properties", function() {
 
                 strictEqual(P.get(user, "sex"), "m", "Sex is good");
                 deepEqual(P.get(user, "name"), user.name, "Name object is equal");
@@ -26,24 +49,43 @@
                 equal(P.get(user, "name.first"), "Shawn", "First name works");
                 equal(P.get(user, "name.last"), "Allen", "Last name works");
                 equal(P.get(user, "name.last.length"), 5, "Last name length matches");
+            });
 
+            test("Templates properties", function() {
                 var getName = P.template("{name.last}, {name.first}");
                 equal(getName(user), "Allen, Shawn", "Name template works");
+            });
 
-                var getNames = P.multigetter("name.first", "name.last");
-                deepEqual(getNames(user), ["Shawn", "Allen"], "Multi-getter works");
-                var getNames2 = P.multigetter(["name.first", "name.last"]);
-                deepEqual(getNames2(user), ["Shawn", "Allen"], "Multi-getter works with array argument");
-
+            test("Sets properties", function() {
                 Properly.set(user, "age", 31);
                 equal(user.age, 31, "Set user age to 31");
 
                 Properly.set(user, "name.middle", "Paul");
                 equal(user.name.middle, "Paul", "Set user middle name");
+            });
 
-                Properly.multiset(user, {"name.middle": null, "age": null});
-                equal(user.name.middle, null, "Unset middle name via multiset");
-                equal(user.age, null, "Unset age via multiset");
+            test("Multi-gets and sets properties", function() {
+                var getNames = P.multigetter("name.first", "name.last");
+                deepEqual(getNames(user), ["Shawn", "Allen"], "Multi-getter works");
+                var getNames2 = P.multigetter(["name.first", "name.last"]);
+                deepEqual(getNames2(user), ["Shawn", "Allen"], "Multi-getter works with array argument");
+
+                Properly.multiset(user, {"name.middle": "P.", "age": -1});
+                equal(user.name.middle, "P.", "Set middle name via multiset");
+                equal(user.age, -1, "Set age via multiset");
+            });
+
+            test("Removes properties", function() {
+                Properly.remove(user, "name.middle");
+                strictEqual(user.name.middle, undefined, "Really unset user.name.middle");
+            });
+
+            test("Wraps objects", function() {
+                var wrap = Properly.wrap(user);
+                equal(wrap.get("name.first"), "Shawn", "wrap(user).get('first.name') works");
+
+                var wrapProp = Properly.wrap.prop(user, "name");
+                deepEqual(wrapProp.get(), user.name, "wrap.prop(user, 'name').get() works");
             });
 
         </script>
