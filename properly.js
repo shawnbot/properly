@@ -1,51 +1,32 @@
+/*
+ * Properly v0.1.0
+ */
 (function(exports) {
 
 exports.Properly = (function() {
     /**
-     * Properly(prop) returns an object with get() and set() methods that
-     * correspond to Properly.getter(prop) and Properly.setter(prop).
+     * Properly(prop) returns an object with get(), set() and rem() methods that
+     * correspond to Properly.getter(prop), Properly.setter(prop), and
+     * Properly.remover(prop).
+     *
+     * This function works with and without the new keyword, so you can use it
+     * like a class if you like:
+     *
+     * var p1 = Properly("name");
+     * var p2 = new Properly("name");
      */
     var Properly = function(prop) {
         if (this instanceof Properly) {
             this.get = Properly.getter(prop);
             this.set = Properly.setter(prop);
+            this.rem = Properly.remover(prop);
         } else {
             return {
                 get: Properly.getter(prop),
-                set: Properly.setter(prop)
+                set: Properly.setter(prop),
+                rem: Properly.remover(prop)
             };
         }
-    };
-
-    /**
-     * Creates an object with get() and set() functions that get and set
-     * properties on the provided object.
-     */
-    Properly.wrap = function(obj) {
-        return {
-            get: function(prop) {
-                return Properly.get(obj, prop);
-            },
-            set: function(prop, value) {
-                return Properly.set(obj, prop, value);
-            }
-        };
-    };
-
-    /**
-     * Creates an object with get() and set() functions that get and set the
-     * named property on the provided object.
-     */
-    Properly.wrap.prop = function(obj, prop) {
-        var p = Properly(prop);
-        return {
-            get: function() {
-                return p.get(obj);
-            },
-            set: function(value) {
-                return p.set(obj, value);
-            }
-        };
     };
 
     /**
@@ -226,6 +207,43 @@ exports.Properly = (function() {
     // shorthand for Properly.multiremover(props)(obj);
     Properly.multiremove = function(obj, props) {
         return Properly.multiremover(props).call(null, obj);
+    };
+
+    /**
+     * Creates an object with get(), set() and rem() functions that get, set and
+     * remove properties on the provided object.
+     */
+    Properly.wrap = function(obj) {
+        return {
+            get: function(prop) {
+                return Properly.get(obj, prop);
+            },
+            set: function(prop, value) {
+                return Properly.set(obj, prop, value);
+            },
+            rem: function(prop) {
+                return Properly.remove(obj, prop);
+            }
+        };
+    };
+
+    /**
+     * Creates an object with get(), set() and rem() functions that get, set and
+     * remove the named property on the provided object.
+     */
+    Properly.wrap.prop = function(obj, prop) {
+        var p = Properly(prop);
+        return {
+            get: function() {
+                return p.get(obj);
+            },
+            set: function(value) {
+                return p.set(obj, value);
+            },
+            rem: function() {
+                 return p.rem(obj);
+            }
+        };
     };
 
     /**
