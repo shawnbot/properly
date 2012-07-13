@@ -104,6 +104,8 @@ exports.Properly = (function() {
                     var field = fields[i];
                     if (field.type) {
                         d = d[field.name] || (d[field.name] = new field.type);
+                    } else if (d instanceof Array && field.name === "") {
+                        d.push(value);
                     } else {
                         d[field.name] = value;
                     }
@@ -283,7 +285,10 @@ exports.Properly = (function() {
 
         function pushField() {
             if (fields.length && fields[fields.length - 1].type === Array) {
-                field.name = parseInt(field.name);
+                var index = parseInt(field.name);
+                if (!isNaN(index)) {
+                    field.name = index;
+                }
             }
             fields.push(field);
             field = {name: ""};
