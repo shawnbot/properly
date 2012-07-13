@@ -88,6 +88,41 @@ console.log("full name:", formatName(person)); // "Shawn Allen"
                 deepEqual(wrapProp.get(), user.name, "wrap.prop(user, 'name').get() works");
             });
 
+            test("Can set complex nested properties", function() {
+                var config = {
+                    series: []
+                };
+
+                P.set(config, "series[0]", "foo");
+                equal(config.series[0], "foo", "Sets array index");
+
+                P.set(config, "series[]", "bar");
+                equal(config.series[1], "bar", "Pushes to array[]");
+
+                var collection = {},
+                    feature = {};
+
+                P.multiset(feature, {
+                    "properties.title": "Stamen",
+                    "geometry.type": "Point",
+                    "geometry.coordinates[0]": -122.4196633,
+                    "geometry.coordinates[1]": 37.7647074
+                });
+
+                deepEqual(feature, {
+                    properties: {
+                        title: "Stamen"
+                    },
+                    geometry: {
+                        type: "Point",
+                        coordinates: [-122.4196633, 37.7647074]
+                    }
+                }, "Created nested feature properties with multiset()");
+
+                P.set(collection, "features[]", feature);
+                strictEqual(collection.features[0], feature, "Set feature at features[0]");
+            });
+
         </script>
     </body>
 </html>
