@@ -1,5 +1,5 @@
 /*
- * Properly v0.1.0
+ * Properly v0.1.1
  */
 (function(exports) {
 
