@@ -170,6 +170,15 @@ exports.Properly = (function() {
         return Properly.multisetter(keyValues).call(null, obj);
     };
 
+    /**
+     * Create a function that deletes the named property from the object
+     * provided as the first argument.
+     *
+     * var removeFoo = Properly.remove("foo"),
+     *     stuff = {foo: "foo", bar: "bar"};
+     * removeFoo(stuff);
+     * console.log(stuff.foo); // undefined
+     */
     Properly.remover = function(prop) {
         var fields = Properly.parseFieldNames(prop),
             len = fields.length;
@@ -193,21 +202,46 @@ exports.Properly = (function() {
         }
     };
 
+    // shorthand for Properly.remover(prop)(obj);
     Properly.remove = function(obj, prop) {
         return Properly.remover(prop).call(null, obj);
     };
 
-    Properly.multiremover = function(props) {
-        var len = props.length;
+    /**
+     * Create a function that removes multiple named properties from the object
+     * provided as its first argument.
+     */
+    Properly.multiremover = function(propOrProps) {
+        var fields = (propOrProps instanceof Array)
+            ? propOrProps
+            : _slice(arguments);
+        var len = fields.length;
         return function(d) {
             for (var i = 0; i < len; i++) {
-                Properly.remove(obj, props[i]);
+                Properly.remove(obj, fields[i]);
             }
         };
     };
 
+    // shorthand for Properly.multiremover(props)(obj);
     Properly.multiremove = function(obj, props) {
         return Properly.multiremover(props).call(null, obj);
+    };
+
+    /**
+     * Create a function that formats an object's properties using the
+     * Mustache-style string template.
+     *
+     * var user = {name: {first: "Joe", last: "Plumber"}},
+     *     tmpl = Properly.template("{first} the {last}");
+     * console.log(tmpl(user)); // "Joe the Plumber"
+     */
+    Properly.template = function(tmpl) {
+        return function(d) {
+            return tmpl.replace(/{([^}]+)}/g, function(match, prop) {
+                return Properly.get(d, prop);
+            });
+        };
     };
 
     /**
@@ -266,22 +300,6 @@ exports.Properly = (function() {
         }
         pushField();
         return fields;
-    };
-
-    /**
-     * Create a function that formats an object's properties using the
-     * Mustache-style string template.
-     *
-     * var user = {name: {first: "Joe", last: "Plumber"}},
-     *     tmpl = Properly.template("{first} the {last}");
-     * console.log(tmpl(user)); // "Joe the Plumber"
-     */
-    Properly.template = function(tmpl) {
-        return function(d) {
-            return tmpl.replace(/{([^}]+)}/g, function(match, prop) {
-                return Properly.get(d, prop);
-            });
-        };
     };
 
     return Properly;
