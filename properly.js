@@ -1,9 +1,4 @@
-/*
- * Properly v0.1.1
- */
-(function(exports) {
-
-exports.Properly = (function() {
+Properly = (function() {
     /**
      * Properly(prop) returns an object with get(), set() and rem() methods that
      * correspond to Properly.getter(prop), Properly.setter(prop), and
@@ -17,17 +12,20 @@ exports.Properly = (function() {
      */
     var Properly = function(prop) {
         if (this instanceof Properly) {
+            this.name = prop;
             this.get = Properly.getter(prop);
             this.set = Properly.setter(prop);
             this.rem = Properly.remover(prop);
         } else {
-            return {
-                get: Properly.getter(prop),
-                set: Properly.setter(prop),
-                rem: Properly.remover(prop)
-            };
+            var p = Properly.getter(prop);
+            p.name = prop;
+            p.set = Properly.setter(prop);
+            p.rem = Properly.remover(prop);
+            return p;
         }
     };
+
+    Properly.version = "0.2.0";
 
     /**
      * Create a function that gets the named property from the function's first
@@ -325,15 +323,15 @@ exports.Properly = (function() {
         return fields;
     };
 
+    function _slice(a, b, c) {
+        return Array.prototype.slice.call(a, b, c);
+    }
+
+    function _map(a, b) {
+        return Array.prototype.map.call(a, b);
+    }
+
     return Properly;
 })();
 
-function _slice(a, b, c) {
-    return Array.prototype.slice.call(a, b, c);
-}
-
-function _map(a, b) {
-    return Array.prototype.map.call(a, b);
-}
-
-})(typeof exports === "undefined" ? window : exports);
+if (typeof module === "object") module.exports = Properly;
