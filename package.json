@@ -1,10 +1,9 @@
 {
   "name": "properly",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "get properties from JavaScript objects, nicely",
   "main": "properly.js",
   "scripts": {
-    "test": "make test"
   },
   "repository": {
     "type": "git",
@@ -16,10 +15,9 @@
     "map",
     "reduce"
   ],
-  "author": "Shawn Allen <shawn@alterior.net>",
+  "author": "Shawn Allen",
   "license": "BSD",
   "readmeFilename": "README.md",
-  "gitHead": "3bc17ccedd418e5ebdc4100d60312b75f6cd70dd",
   "dependencies": {
     "uglifyjs": "~2.3.6"
   }
